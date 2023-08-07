@@ -1,0 +1,9 @@
+{
+    "params":
+    {
+      "login_image":"login.svg",
+      "admin_user":"admin",
+      "admin_password": "admin"
+    }
+  
+}

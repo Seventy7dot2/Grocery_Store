@@ -5,15 +5,27 @@
 <div class="list-group">
     {% for category in categories %}
         <div class="container-fluid">
-
             <a href="/aview/{{category.cid}}" class="list-group-item list-group-item-action">{{category.name}}</a>
             <a href="/additem/{{category.cid}}"><button type="button" class="btn btn-outline-primary">Add Item</button></a>
             <a href="/changecname/{{category.cid}}"><button type="button" class="btn btn-outline-success">Change Name</button></a>
-            <a href="#"><button type="button" class="btn btn-outline-danger">Delete</button></a>
+            <a href="/deletecat/{{category.cid}}"><button type="button" class="btn btn-outline-danger" onclick="confirmDelete(event, this,'{{category.name}}','{{category.cid}}')">Delete</button></a>
         </div>    
     {% endfor %}
 </div>
 <br><br>
 <a href="/addcat"><button type="button" class="btn btn-outline-primary btn-lg">+Add New Category</button></a>
 
+<script>
+    function confirmDelete(event, link, linkName, catid) {
+        event.preventDefault();
+        
+        var confirmed = window.confirm("This will delete Category: "+linkName+" and all it's associated product. "+"Are you sure you want to proceed with ?");
+        
+        if (confirmed) {
+            window.location.href = "/deletecat/"+catid;
+        }
+        
+        return false;
+    }
+</script>
 {% endblock %}

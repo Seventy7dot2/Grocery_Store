@@ -5,7 +5,7 @@ db=SQLAlchemy()
 class Category(db.Model):
     cid = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(30), nullable=False)
-    pro= db.relationship('Product', backref ="cat")
+    pro= db.relationship('Product', backref ="cat", cascade='all, delete-orphan')
 class Product(db.Model):
     pid = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(30), nullable=False)

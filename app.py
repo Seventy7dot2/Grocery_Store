@@ -113,6 +113,51 @@ def changecname(cno):
         db.session.commit()
         return redirect('/aview')
     return render_template('changename.html',cat=cat)
+
+
+
+@app.route("/edititem/<int:pno>",methods=['GET', 'POST'])
+def edititem(pno):
+    pro= Product.query.get(pno)
+    if request.method=='POST':
+        pname=request.form.get('name')
+        pro.name=pname
+        punit=request.form.get('unit')
+        pro.unit=punit
+        pqnt=int(request.form.get('quantity'))
+        pro.quantity=pqnt
+        peach=int(request.form.get('peach'))
+        pro.peach=peach
+        if 'file' in request.files:
+            file = request.files['file']
+            if file.filename != '':
+                if file:
+                    file = request.files['file']
+                    filename = f"{pro.pid}_{file.filename}"
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    pro.image_url = url_for('static', filename=f'img/{filename}')
+                db.session.commit()    
+            db.session.commit()    
+        db.session.commit()
+        return redirect('/aview')
+    return render_template('edititem.html',pro=pro)
+
+
+
+
+
+@app.route("/deletecat/<int:cno>")
+def deletecat(cno):
+    cat= Category.query.get(cno)
+    db.session.delete(cat)
+    db.session.commit()
+    return redirect('/aview')
+@app.route("/deleteitem/<int:pno>")
+def deleteitem(pno):
+    pro= Product.query.get(pno)
+    db.session.delete(pro)
+    db.session.commit()
+    return redirect('/aview')
 @app.route("/addcat",methods=['GET', 'POST'])
 def addcat():
     if request.method=='POST':

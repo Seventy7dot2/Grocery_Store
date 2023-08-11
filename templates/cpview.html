@@ -10,12 +10,24 @@
             <div class="card-body">
                 <h5 class="card-title">{{pro.name}}</h5>
                 <p class="card-text">{{pro.peach}}/{{pro.unit}}</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+            <a href="/edititem/{{pro.pid}}"><button type="button" class="btn btn-outline-primary">Edit</button></a>
+            <a href="/deleteitem/{{pro.pid}}"><button type="button" class="btn btn-outline-danger" onclick="confirmDelete(event, this,'{{pro.name}}','{{pro.pid}}')">Delete</button></a>
             </div>
         </div>
     </div>    
     {% endfor %}
 </div>
-
-
+<script>
+    function confirmDelete(event, link, linkName, pid) {
+        event.preventDefault();
+        
+        var confirmed = window.confirm("This will delete Product: "+linkName+" and all it's details. "+"Are you sure you want to proceed with ?");
+        
+        if (confirmed) {
+            window.location.href = "/deleteitem/"+pid;
+        }
+        
+        return false;
+    }
+</script>
 {% endblock %}

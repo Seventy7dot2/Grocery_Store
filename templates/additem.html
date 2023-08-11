@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block body %}
+<h3>Adding item in {{cat.name}}</h3>
+<form action="/additem/{{cat.cid}}" method="post" enctype="multipart/form-data">
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Product Name</label>
+        <input type="text" class="form-control" id="name" name="name">
+    </div>
+    <div class="mb-3">
+        <label for="unit" class="form-label">Unit</label>
+        <input type="text" class="form-control" id="unit" name="unit" placeholder="i.e. kg,pcs, etc">
+    </div>
+    <div class="mb-3">
+        <label for="peach" class="form-label">Price per Unit(Rs.)</label>
+        <input type="number" class="form-control" id="peach" name="peach">
+    </div>
+    <div class="mb-3">
+        <label for="quantity" class="form-label">Available Quantity</label>
+        <input type="text" class="form-control" id="quantity" name="quantity">
+    </div>
+    <div>
+        <label for="file" class="form-label">Price Image:</label>
+        <input type="file" class="form-control" name="file">
+    </div>
+    <input class="btn btn-primary" type="submit" value="Submit">
+</form>
+
+
+{% endblock %}

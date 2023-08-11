@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block body %}
+<form action="/changecname/{{cat.cid}}" method="post" onsubmit="return confirmDelete();">
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Product Name</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{cat.name}}">
+    </div>
+    <input class="btn btn-primary" type="submit" value="Submit">
+</form>
+<script>
+        function confirmDelete() {
+            return confirm("{{cat.name}} will be changed. Are you sure?");
+        }
+</script>
+{% endblock %}

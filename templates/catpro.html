@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block body %}
+
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for pro in pros %}
+    <div class="col">
+        <div class="card h-100" style="width: 18rem;">
+            <img src="{{ pro.image_url }}"  alt="{{ pro.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{pro.name}}</h5>
+                <p class="card-text">{{pro.peach}}/{{pro.unit}}</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+    </div>    
+    {% endfor %}
+</div>
+
+
+{% endblock %}

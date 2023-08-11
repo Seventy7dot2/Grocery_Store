@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block body %}
+
+
+<div class="list-group">
+    {% for category in categories %}
+        <div class="container-fluid">
+
+            <a href="/aview/{{category.cid}}" class="list-group-item list-group-item-action">{{category.name}}</a>
+            <a href="/additem/{{category.cid}}"><button type="button" class="btn btn-outline-primary">Add Item</button></a>
+            <a href="/changecname/{{category.cid}}"><button type="button" class="btn btn-outline-success">Change Name</button></a>
+            <a href="#"><button type="button" class="btn btn-outline-danger">Delete</button></a>
+        </div>    
+    {% endfor %}
+</div>
+<br><br>
+<a href="/addcat"><button type="button" class="btn btn-outline-primary btn-lg">+Add New Category</button></a>
+
+{% endblock %}

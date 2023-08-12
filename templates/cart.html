@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cart</title>
+</head>
+<body>
+    <h1>Your Cart</h1>
+    
+    <table border="1">
+        <tr>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+        </tr>
+        {% for item in cart_items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.product.peach }}</td>
+                <td>{{ item.cart_total }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p>Total Cart Price: {{ total_cart_price }}</p>
+    
+    <a href="/cview">Back to Home</a>
+</body>
+</html>

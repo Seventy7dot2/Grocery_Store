@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "user-layout.html" %}
 {% block body %}
 <style>
     .integer-input {
@@ -21,14 +21,17 @@
                 <h5 class="card-title">{{ product.name }}</h5>
                 <p class="card-text">&#8377;{{ product.peach }}/{{ product.unit }}</p>
                 {% if product.quantity|int > 0 %}
-                <div class="integer-input">
-                    <button class="btn btn-danger" id="minus-btn" stock="{{ product.quantity }}"
-                        of="input-field-{{ product.pid }}" data-action="decrease">-</button>
-                    <input class="form-control" type="number" id="input-field-{{ product.pid }}" value="0" min="0"
-                        max="{{ product.quantity }}" readonly>
-                    <button class="btn btn-primary" id="plus-btn" stock="{{ product.quantity }}"
-                        of="input-field-{{ product.pid }}" data-action="increase">+</button>
-                </div>
+                <form action="/cart/{{product.pid}}" method="post">
+                    <div class="integer-input">
+                        <button class="btn btn-danger" id="minus-btn" stock="{{ product.quantity }}"
+                            of="input-field-{{ product.pid }}" data-action="decrease" type="button">-</button>
+                        <input class="form-control" type="number" id="input-field-{{ product.pid }}" value="0" min="0"
+                            max="{{ product.quantity }}" name="quantity" readonly>
+                        <button class="btn btn-primary" id="plus-btn" stock="{{ product.quantity }}"
+                            of="input-field-{{ product.pid }}" data-action="increase" type="button">+</button>
+                    </div>
+                    <input class="btn btn-primary my-3" type="submit" value="Add To Cart">
+                </form>
                 {% else %} <p>Out of Stock</p>
                 {% endif %}
             </div>

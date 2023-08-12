@@ -3,6 +3,9 @@
 
 
 <div class="list-group">
+    {% if categories|length<=0 %}
+        <p>No categories found</p>
+    {%else%}
     {% for category in categories %}
         <div class="container-fluid">
             <a href="/aview/{{category.cid}}" class="list-group-item list-group-item-action">{{category.name}}</a>
@@ -11,6 +14,7 @@
             <a href="/deletecat/{{category.cid}}"><button type="button" class="btn btn-outline-danger" onclick="confirmDelete(event, this,'{{category.name}}','{{category.cid}}')">Delete</button></a>
         </div>    
     {% endfor %}
+    {% endif %}
 </div>
 <br><br>
 <a href="/addcat"><button type="button" class="btn btn-outline-primary btn-lg">+Add New Category</button></a>

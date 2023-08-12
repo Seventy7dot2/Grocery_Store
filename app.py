@@ -143,8 +143,50 @@ def edititem(pno):
     return render_template('edititem.html',pro=pro)
 
 
+@app.route('/cart/<int:pid>', methods=['POST'])
+def add_to_cart(pid):
+    if 'user' not in session:
+        return redirect('/home')  # Redirect to login if not authenticated
+
+    user_id = session['user']
+    quantity = int(request.form.get('quantity'))
+
+    # Get the user and product objects
+    user = User.query.filter_by(uname=user_id)
+    product = Product.query.get(pid)
+
+    if user and product:
+        existing_cart_item = Cart.query.filter_by(user_id=user_id, product_id=pid).first()
+        if existing_cart_item:
+            # Update the quantity and cart_total of the existing cart item
+            existing_cart_item.quantity += quantity
+            existing_cart_item.cart_total = existing_cart_item.product.peach * existing_cart_item.quantity
+        else:
+            # Create a new cart item
+            cart_item = Cart(user_id=user_id, product_id=pid, quantity=quantity, cart_total=product.peach * quantity)
+            db.session.add(cart_item)
+        db.session.commit()
+        
+        return redirect('/cart')  # Redirect to cart page after adding to cart
+    else:
+        return "User or product not found."
 
 
+
+@app.route('/cart')
+def view_cart():
+    if 'user' not in session:
+        return redirect('/home')  # Redirect to login if not authenticated
+
+    user_id = session['user']
+    user = User.query.filter_by(uname=user_id)
+    
+    if user:
+        cart_items = Cart.query.filter_by(user_id=user_id).all()
+        total_cart_price = sum(item.cart_total for item in cart_items)
+        return render_template('cart.html', cart_items=cart_items, total_cart_price=total_cart_price)
+    else:
+        return "User not found."
 
 @app.route("/deletecat/<int:cno>")
 def deletecat(cno):
@@ -169,7 +211,7 @@ def addcat():
     return render_template('addcat.html')
 @app.route("/cview")
 def cview():
-    if ('user' in session and session['user'] == cname):
+    if ('user' in session ):
         
         products= Product.query.all()
         return render_template('home.html', products=products)

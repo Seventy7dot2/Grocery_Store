@@ -79,7 +79,7 @@ def categories():
 def catpro(caid):
     cat= Category.query.get(caid)
     pros= cat.pro
-    return render_template('catpro.html', pros=pros, cat=cat)
+    return render_template('catpro.html', products=pros, cat=cat)
 @app.route("/additem/<int:cno>",methods=['GET', 'POST'])
 def additem(cno):
     if request.method=='POST':

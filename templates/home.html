@@ -1,5 +1,16 @@
 {% extends "layout.html" %}
 {% block body %}
+<style>
+    .integer-input {
+        display: flex;
+        align-items: center;
+    }
+
+    #input-field {
+        width: 40px;
+        text-align: center;
+    }
+</style>
 <div class="row row-cols-1 row-cols-md-3 g-4">
 
     {% for product in products %}
@@ -7,12 +18,49 @@
         <div class="card h-100" style="width: 18rem;">
             <img src="{{ product.image_url }}" alt="{{ product.name }}" height="200rem">
             <div class="card-body">
-                <h5 class="card-title">{{product.name}}</h5>
-                <p class="card-text">&#8377;{{product.peach}}/{{product.unit}}</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">&#8377;{{ product.peach }}/{{ product.unit }}</p>
+                {% if product.quantity|int > 0 %}
+                <div class="integer-input">
+                    <button class="btn btn-danger" id="minus-btn" stock="{{ product.quantity }}"
+                        of="input-field-{{ product.pid }}" data-action="decrease">-</button>
+                    <input class="form-control" type="number" id="input-field-{{ product.pid }}" value="0" min="0"
+                        max="{{ product.quantity }}" readonly>
+                    <button class="btn btn-primary" id="plus-btn" stock="{{ product.quantity }}"
+                        of="input-field-{{ product.pid }}" data-action="increase">+</button>
+                </div>
+                {% else %} <p>Out of Stock</p>
+                {% endif %}
             </div>
         </div>
     </div>
     {% endfor %}
+
 </div>
+<script>
+    function handleButtonClick(event) {
+        const action = event.target.getAttribute("data-action");
+        const stock = parseInt(event.target.getAttribute("stock"), 10);
+        const targetFieldId = event.target.getAttribute("of");
+        const inputField = document.getElementById(targetFieldId);
+        let value = parseInt(inputField.value, 10);
+
+        if (action === "decrease") {
+            if (value > 0) {
+                inputField.value = (value - 1).toString();
+                console.log("working1");
+            }
+        } else if (action === "increase") {
+            if (value < stock) {
+                inputField.value = (value + 1).toString();
+            }
+        }
+    }
+
+    const buttons = document.querySelectorAll(".integer-input button");
+    buttons.forEach(button => {
+        button.addEventListener("click", handleButtonClick);
+    });
+</script>
+
 {% endblock %}

@@ -1,17 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Cart</title>
-</head>
-<body>
+{% extends "user-layout.html" %}
+{% block body %}
     <h1>Your Cart</h1>
-    
-    <table border="1">
+    {% if cart_items|length<=0 %}
+        <p>Cart is Empty!!!!!</p>
+    {% else %}
+    <table class="table">
         <tr>
             <th>Product Name</th>
             <th>Quantity</th>
             <th>Price</th>
             <th>Total</th>
+            <th></th>
         </tr>
         {% for item in cart_items %}
             <tr>
@@ -19,11 +18,20 @@
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.product.peach }}</td>
                 <td>{{ item.cart_total }}</td>
+                <td><a href="/delete/{{item.product.pid}}"><button type="button" class="btn btn-outline-danger">Delete</button></a></td>
             </tr>
         {% endfor %}
+        <tr class="table-info">
+            <td><b>Total Cart Price:</b></td>
+            <td></td>
+            <td></td>
+            <td><b>{{ total_cart_price }}</b></td>
+            <td><a href="/empty"><button type="button" class="btn btn-danger">Empty Cart</button></a></td>
+        </tr>
     </table>
-    <p>Total Cart Price: {{ total_cart_price }}</p>
-    
-    <a href="/cview">Back to Home</a>
-</body>
-</html>
+    <div>
+        <a href="/place_order"><button type="button" class="btn btn-outline-success btn-lg btn-block">Place The Order</button></a>
+    </div>
+    {% endif %}
+    <a href="/cview" class="btn btn-outline-secondary">Back to Home</a>
+{% endblock %}

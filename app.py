@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, session, redirect, url_for, f
 from dbmodel import *
 import json
 import os
+from datetime import datetime
 app = Flask(__name__)
 app.secret_key = 'super-secret-key'
 with open('config.json', 'r') as c:
@@ -150,7 +151,8 @@ def add_to_cart(pid):
 
     user_id = session['user']
     quantity = int(request.form.get('quantity'))
-
+    if quantity<=0:
+        return redirect('/cview')
     # Get the user and product objects
     user = User.query.filter_by(uname=user_id)
     product = Product.query.get(pid)
@@ -167,7 +169,7 @@ def add_to_cart(pid):
             db.session.add(cart_item)
         db.session.commit()
         
-        return redirect('/cart')  # Redirect to cart page after adding to cart
+        return redirect('/cview')  # Redirect to cart page after adding to cart
     else:
         return "User or product not found."
 
@@ -187,6 +189,86 @@ def view_cart():
         return render_template('cart.html', cart_items=cart_items, total_cart_price=total_cart_price)
     else:
         return "User not found."
+
+
+
+@app.route('/delete/<int:pid>')
+def delete_from_cart(pid):
+    if 'user' not in session:
+        return redirect('/home')  # Redirect to login if not authenticated
+
+    user_id = session['user']
+
+    # Get the cart item to delete
+    cart_item = Cart.query.filter_by(user_id=user_id, product_id=pid).first()
+
+    if cart_item:
+        db.session.delete(cart_item)
+        db.session.commit()
+
+    return redirect('/cart')
+
+@app.route('/empty')
+def empty_cart():
+    if 'user' not in session:
+        return redirect('/home')  # Redirect to login if not authenticated
+
+    user_id = session['user']
+
+    # Delete all cart items for the user
+    cart_items = Cart.query.filter_by(user_id=user_id).all()
+    for cart_item in cart_items:
+        db.session.delete(cart_item)
+    db.session.commit()
+
+    return redirect('/cview')
+
+
+
+
+@app.route('/place_order')
+def place_order():
+    if 'user' not in session:
+        return redirect('/home')  # Redirect to login if user is not logged in
+    
+    user_id = session['user']
+    cart_items = Cart.query.filter_by(user_id=user_id).all()
+    
+    # Calculate total order price
+    total_order_price = sum(cart_item.product.peach * cart_item.quantity for cart_item in cart_items)
+    
+    # Create a new order
+    order = Order(
+        user_id=user_id,
+        order_date=datetime.now(),
+        status='Pending',
+        total_order_price=total_order_price
+    )
+    db.session.add(order)
+    db.session.commit()
+    
+    # Move items from cart to order
+    for cart_item in cart_items:
+        order_product = OrderProduct(order_id=order.order_id, product_id=cart_item.product_id)
+        db.session.delete(cart_item)  # Remove from cart
+        db.session.add(order_product)  # Add to order
+        db.session.commit()
+    
+    return redirect('/orders')  # Redirect to orders page after placing order
+
+
+@app.route('/orders')
+def orders():
+    if 'user' not in session:
+        return redirect('/login')  # Redirect to login if user is not logged in
+    
+    # user = User.query.get(session['user'])
+    user_id = session['user']
+    user_orders = Order.query.filter_by(user_id=user_id).all()
+    
+    return render_template('orders.html', user_orders=user_orders)
+
+
 
 @app.route("/deletecat/<int:cno>")
 def deletecat(cno):

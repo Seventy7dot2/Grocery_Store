@@ -1,0 +1,15 @@
+{% extends "user-layout.html" %}
+{% block body %}
+    <h1>Your Orders</h1>
+    <ul>
+        {% for order in user_orders %}
+        <li>
+            Order ID: {{ order.order_id }}<br>
+            Order Date: {{ order.order_date }}<br>
+            Status: {{ order.status }}<br>
+            Total Order Price: {{ order.total_order_price }}<br>
+        </li>
+        <hr>
+        {% endfor %}
+    </ul>
+{% endblock %}

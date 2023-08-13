@@ -14,7 +14,8 @@
     </div>
     <div class="mb-3">
         <label for="unit" class="form-label">Unit</label>
-        <input type="text" class="form-control" id="unit" name="unit" placeholder="i.e. kg,pc, etc" value="{{pro.unit}}">
+        <input type="text" class="form-control" id="unit" name="unit" placeholder="i.e. kg,pc, etc"
+            value="{{pro.unit}}">
     </div>
     <div class="mb-3">
         <label for="peach" class="form-label">Price per Unit(Rs.)</label>
@@ -25,6 +26,19 @@
         <input type="text" class="form-control" id="quantity" name="quantity" value="{{pro.quantity}}">
     </div>
     <div>
+        <label for="category" class="form-label">Category:</label>
+        <select class="form-control" name="category" value="{{pro.cid}}">
+            {% for category in categories %}
+            {% if pro.cid==category.cid %}
+            <option value="{{category.cid}}" selected>{{category.name}}</option>
+            {% else %}
+            <option value="{{category.cid}}">{{category.name}}</option>
+
+            {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <div>
         <p class="form-label">Current Image:</p>
         <img id="image-preview" src="{{ pro.image_url }}" alt="Image Preview">
     </div>
@@ -32,6 +46,6 @@
         <label for="file" class="form-label">New Product Image:</label>
         <input type="file" class="form-control" name="file" value="{{pro.image_url}}">
     </div>
-    <input class="btn btn-primary" type="submit" value="Submit">
+    <input class="btn btn-primary my-3" type="submit" value="Submit">
 </form>
 {% endblock %}

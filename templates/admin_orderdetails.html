@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block body %}
+<ul>
+    <h3>
+        Username: {{order.user_id}}
+        <br>
+        Order ID: {{order.order_id}}
+    </h3>
+    {% for product in products_with_quantity %}
+    <li>
+        Product Name: {{ product.product_name }}<br>
+        Quantity: {{ product.quantity }}<br>
+    </li>
+    <hr>
+    {% endfor %}
+</ul>
+<a href="/confirm-order/{{order.order_id}}" class="btn btn-outline-primary">Confirm Order</a>
+<a href="/cancel-order/{{order.order_id}}" class="btn btn-outline-danger">Cancel Order</a>
+<a href="/delivered-order/{{order.order_id}}" class="btn btn-outline-success">Order Delivered</a>
+{% endblock %}

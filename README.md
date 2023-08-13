@@ -3,6 +3,42 @@
 ![Grocery Store App](grocery-store.png)
 
 The **Grocery Store App** is a user-friendly and efficient web application designed to streamline your grocery shopping experience. Whether you're a customer looking to easily browse and purchase products or an admin wanting to manage categories and products effortlessly, this app has you covered. With a powerful tech stack comprising **Python Flask**, **SQLAlchemy**, **SQLite**, and **Bootstrap**, we've created a seamless and visually appealing solution for all your grocery store needs.
+## Quick Guide: Running Your Flask Application
+
+1. **Virtual Environment:**
+   - Create: `python -m venv venv`
+   - Activate:
+     - Windows: `venv\Scripts\activate`
+     - macOS/Linux: `source venv/bin/activate`
+
+2. **Install Modules:**
+   - In venv: `pip install -r requirements.txt`
+
+3. **Database Setup:**
+   - Ensure `instance/store.sqlite3` or schema is ready.
+
+4. **Admin Config:**
+   - Update `config.json` with admin info.
+
+5. **Initialize Database:**
+   - Activate venv and run:
+     ```python
+     python
+     from app import db
+     db.create_all()
+     exit()
+     ```
+
+6. **Run Flask App:**
+   - Terminal: `python app.py`
+
+7. **Access App:**
+   - Browser: `http://127.0.0.1:5000/`
+
+8. **Interact:**
+   - Explore the app.
+
+Adjust steps as needed for your project's setup.
 
 ## Features
 
@@ -14,7 +50,9 @@ The **Grocery Store App** is a user-friendly and efficient web application desig
   
 - **Effortless Category Management:** Admins can seamlessly add, edit, and delete product categories through the admin panel, ensuring a well-organized inventory.
   
-- **Comprehensive Product Management:** Admins have the ability to manage products with ease. They can add new products, update existing ones, and remove items that are no longer available.
+- **Comprehensive Product Management:** Admins have the ability to manage products with ease. They change order status.
+- **Comprehensive Product Management:** Admins have the ability to manage products with ease. They change order status.
+- **Comprehensive Inventory Management:** After order is confirmed, Inventory will be managed accordingly.
 
 ## Tech Stack
 

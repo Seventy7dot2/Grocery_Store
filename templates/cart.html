@@ -8,7 +8,7 @@
         <tr>
             <th>Product Name</th>
             <th>Quantity</th>
-            <th>Price</th>
+            <th>Price per unit</th>
             <th>Total</th>
             <th></th>
         </tr>
@@ -16,8 +16,8 @@
             <tr>
                 <td>{{ item.product.name }}</td>
                 <td>{{ item.quantity }}</td>
-                <td>{{ item.product.peach }}</td>
-                <td>{{ item.cart_total }}</td>
+                <td>&#8377;{{ item.product.peach }}</td>
+                <td>&#8377;{{ item.cart_total }}</td>
                 <td><a href="/delete/{{item.product.pid}}"><button type="button" class="btn btn-outline-danger">Delete</button></a></td>
             </tr>
         {% endfor %}
@@ -25,13 +25,26 @@
             <td><b>Total Cart Price:</b></td>
             <td></td>
             <td></td>
-            <td><b>{{ total_cart_price }}</b></td>
+            <td><b>&#8377;{{ total_cart_price }}</b></td>
             <td><a href="/empty"><button type="button" class="btn btn-danger">Empty Cart</button></a></td>
         </tr>
     </table>
     <div>
-        <a href="/place_order"><button type="button" class="btn btn-outline-success btn-lg btn-block">Place The Order</button></a>
+        <a href="/place_order"><button type="button" class="btn btn-outline-success btn-lg btn-block" onclick="confirmOrder(event)">Place The Order</button></a>
     </div>
     {% endif %}
-    <a href="/cview" class="btn btn-outline-secondary">Back to Home</a>
+    <a href="/cview" class="btn btn-outline-secondary my-3">Back to Home</a>
+    <script>
+        function confirmOrder(event) {
+            event.preventDefault();
+            
+            var confirmed = window.confirm("Are you sure you want to proceed with ?");
+            
+            if (confirmed) {
+                window.location.href = "/place_order";
+            }
+            
+            return false;
+        }
+    </script>
 {% endblock %}

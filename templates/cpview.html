@@ -12,7 +12,8 @@
             <img src="{{ pro.image_url }}"  alt="{{ pro.name }}">
             <div class="card-body">
                 <h5 class="card-title">{{pro.name}}</h5>
-                <p class="card-text">{{pro.peach}}/{{pro.unit}}</p>
+                <p class="card-text">&#8377;{{pro.peach}}/{{pro.unit}}</p>
+                <p class="card-text">Quantity Available: {{pro.quantity}}</p>
             <a href="/edititem/{{pro.pid}}"><button type="button" class="btn btn-outline-primary">Edit</button></a>
             <a href="/deleteitem/{{pro.pid}}"><button type="button" class="btn btn-outline-danger" onclick="confirmDelete(event, this,'{{pro.name}}','{{pro.pid}}')">Delete</button></a>
             </div>

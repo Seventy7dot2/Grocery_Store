@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block body %}
+<h1>Your Orders</h1>
+<a href="/admin-orders" class="btn btn-outline-secondary">All orders</a>
+<a href="/admin-orders/pending" class="btn btn-outline-secondary">Pending orders</a>
+<a href="/admin-orders/confirmed" class="btn btn-outline-secondary">Confirmed orders</a>
+<a href="/admin-orders/delivered" class="btn btn-outline-secondary">Delivered orders</a>
+{% if all_orders|length<=0 %}
+    <p>No such order found!</p>
+{% else %}
+<ul>
+    {% for order in all_orders %}
+    <a href="/admin-orders/{{order.order_id}}">
+        <li>
+            Order ID: {{ order.order_id }}<br>
+            User ID: {{ order.user_id }}<br>
+            Order Date: {{ order.order_date }}<br>
+            Status: {{ order.status }}<br>
+            Total Order Price: &#8377;{{ order.total_order_price }}<br>
+        </li>
+    </a>
+    <hr>
+    {% endfor %}
+</ul>
+
+{% endif %}
+{% endblock %}

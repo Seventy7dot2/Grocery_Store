@@ -1,0 +1,12 @@
+{% extends "user-layout.html" %}
+{% block body %}
+<ul>
+    {% for product in products_with_quantity %}
+    <li>
+        Product Name: {{ product.product_name }}<br>
+        Quantity: {{ product.quantity }}<br>
+    </li>
+    <hr>
+    {% endfor %}
+</ul>
+{% endblock %}

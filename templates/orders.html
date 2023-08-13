@@ -1,15 +1,22 @@
 {% extends "user-layout.html" %}
 {% block body %}
     <h1>Your Orders</h1>
+    {% if user_orders|length<=0 %}
+        <p>No Orders yet. Get Started soon!!!</p>
+        <a href="/cview" class="btn btn-outline-success">Back to home</a>
+    {% else %}
     <ul>
         {% for order in user_orders %}
-        <li>
-            Order ID: {{ order.order_id }}<br>
-            Order Date: {{ order.order_date }}<br>
-            Status: {{ order.status }}<br>
-            Total Order Price: {{ order.total_order_price }}<br>
-        </li>
+        <a href="/orders/{{order.order_id}}">
+            <li>
+                Order ID: {{ order.order_id }}<br>
+                Order Date: {{ order.order_date }}<br>
+                Status: {{ order.status }}<br>
+                Total Order Price: &#8377;{{ order.total_order_price }}<br>
+            </li>
+        </a>
         <hr>
         {% endfor %}
     </ul>
+    {% endif %}
 {% endblock %}

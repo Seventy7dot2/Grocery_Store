@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for, flash
+from flask import Flask, render_template, request, session, redirect, url_for
 from dbmodel import *
 import json
 import os
@@ -58,7 +58,6 @@ def dashboard():
         if (username == params['admin_user'] and userpass == params['admin_password']):
             #set the session variable
             session['admin'] = username
-            products= Product.query.all()
             return redirect("/aview")
 
     return render_template('login.html', params=params)
@@ -120,6 +119,7 @@ def changecname(cno):
 @app.route("/edititem/<int:pno>",methods=['GET', 'POST'])
 def edititem(pno):
     pro= Product.query.get(pno)
+    categories=Category.query.all()
     if request.method=='POST':
         pname=request.form.get('name')
         pro.name=pname
@@ -129,6 +129,8 @@ def edititem(pno):
         pro.quantity=pqnt
         peach=int(request.form.get('peach'))
         pro.peach=peach
+        cid=int(request.form.get('category'))
+        pro.cid=cid
         if 'file' in request.files:
             file = request.files['file']
             if file.filename != '':
@@ -141,7 +143,7 @@ def edititem(pno):
             db.session.commit()    
         db.session.commit()
         return redirect('/aview')
-    return render_template('edititem.html',pro=pro)
+    return render_template('edititem.html',pro=pro,categories=categories)
 
 
 @app.route('/cart/<int:pid>', methods=['POST'])
@@ -249,7 +251,7 @@ def place_order():
     
     # Move items from cart to order
     for cart_item in cart_items:
-        order_product = OrderProduct(order_id=order.order_id, product_id=cart_item.product_id)
+        order_product = OrderProduct(order_id=order.order_id, product_id=cart_item.product_id, quantity=cart_item.quantity)
         db.session.delete(cart_item)  # Remove from cart
         db.session.add(order_product)  # Add to order
         db.session.commit()
@@ -260,13 +262,166 @@ def place_order():
 @app.route('/orders')
 def orders():
     if 'user' not in session:
-        return redirect('/login')  # Redirect to login if user is not logged in
+        return redirect('/home')  # Redirect to login if user is not logged in
     
     # user = User.query.get(session['user'])
     user_id = session['user']
     user_orders = Order.query.filter_by(user_id=user_id).all()
     
     return render_template('orders.html', user_orders=user_orders)
+
+
+
+@app.route('/orders/<int:oid>')
+def showproducts(oid):
+    if 'user' not in session:
+        return redirect('/home')
+    order = Order.query.get(oid)
+    if not order:
+        return "Order not found."
+    products_with_quantity = []
+    for product in order.products:
+        products_with_quantity.append({
+            'product_name': product.name,
+            'quantity': get_quantity_for_product(order, product)
+        })
+    
+    return render_template('orderdetails.html', order=order, products_with_quantity=products_with_quantity)
+
+
+
+
+
+@app.route('/admin-orders')
+def adminorders():
+    if 'admin' not in session:
+        return redirect('/dashboard')  # Redirect to admin login if not logged in as admin
+    
+    all_orders = Order.query.all()
+    
+    return render_template('admin_order.html', all_orders=all_orders)
+
+
+
+@app.route('/admin-orders/pending')
+def pendingadminorders():
+    if 'admin' not in session:
+        return redirect('/dashboard')  # Redirect to admin login if not logged in as admin
+    
+    all_orders = Order.query.filter_by(status='Pending').all()
+    
+    return render_template('admin_order.html', all_orders=all_orders)
+
+
+
+@app.route('/admin-orders/confirmed')
+def confirmedadminorders():
+    if 'admin' not in session:
+        return redirect('/dashboard')  # Redirect to admin login if not logged in as admin
+    
+    all_orders = Order.query.filter_by(status='Confirmed').all()
+    
+    return render_template('admin_order.html', all_orders=all_orders)
+
+
+
+
+@app.route('/admin-orders/delivered')
+def deliveredadminorders():
+    if 'admin' not in session:
+        return redirect('/dashboard')  # Redirect to admin login if not logged in as admin
+    
+    all_orders = Order.query.filter_by(status='Delivered').all()
+    
+    return render_template('admin_order.html', all_orders=all_orders)
+
+
+
+
+
+
+
+@app.route('/admin-orders/<int:oid>')
+def showorderproducts(oid):
+    if 'admin' not in session:
+        return redirect('/dashboard')
+    order = Order.query.get(oid)
+    if not order:
+        return "Order not found."
+    products_with_quantity = []
+    for product in order.products:
+        products_with_quantity.append({
+            'product_name': product.name,
+            'quantity': get_quantity_for_product(order, product)
+        })
+    
+    return render_template('admin_orderdetails.html', order=order, products_with_quantity=products_with_quantity)
+
+def get_quantity_for_product(order, product):
+    order_product = OrderProduct.query.filter_by(order_id=order.order_id, product_id=product.pid).first()
+    return order_product.quantity if order_product else 0
+@app.route('/confirm-order/<int:order_id>')
+def confirm_order(order_id):
+    if 'admin' not in session:
+        return redirect('/admin/login')  # Redirect to admin login if not logged in as admin
+    
+    order = Order.query.get(order_id)
+    if not order:
+        return "Order not found."
+    
+    if order.status != 'Confirmed':
+        
+        # Adjust product quantities
+        for product in order.products:
+            order_quantity = OrderProduct.query.filter_by(order_id=order_id,product_id=product.pid).first().quantity
+            if product.quantity >= order_quantity:
+                product.quantity -= order_quantity
+            else:
+                # Handle the case where available quantity is not enough
+                return "Insufficient quantity available for some product:"+product.name+'<br><a href="/admin-orders">Back to Orders</a>'
+        
+        # Update order status to 'Confirmed'
+        order.status = 'Confirmed'
+        db.session.commit()
+        
+        return redirect('/admin-orders')  # Redirect to admin dashboard after confirming order
+    else:
+        return "Order has already been confirmed."+'<br><a href="/admin-orders">Back to Orders</a>'
+
+
+
+@app.route('/cancel-order/<int:order_id>')
+def cancel_order(order_id):
+    if 'admin' not in session:
+        return redirect('/admin/login')  # Redirect to admin login if not logged in as admin
+    
+    order = Order.query.get(order_id)
+    if not order:
+        return "Order not found."+'<br><a href="/admin-orders">Back to Orders</a>'
+    if order.status =='Delivered':
+        return "Order has already been delivered."+'<br><a href="/admin-orders">Back to Orders</a>'
+    order.status = 'Cancelled'
+    db.session.commit()
+    return redirect('/admin-orders')
+
+
+
+
+@app.route('/delivered-order/<int:order_id>')
+def deliver_order(order_id):
+    if 'admin' not in session:
+        return redirect('/admin/login')  # Redirect to admin login if not logged in as admin
+    
+    order = Order.query.get(order_id)
+    if not order:
+        return "Order not found."
+    
+    order.status = 'Delivered'
+    db.session.commit()
+    return redirect('/admin-orders')
+
+
+
 
 
 
@@ -291,12 +446,22 @@ def addcat():
         db.session.commit()
         return redirect('/aview')
     return render_template('addcat.html')
-@app.route("/cview")
+@app.route("/cview",methods=['GET', 'POST'])
 def cview():
     if ('user' in session ):
-        
+        if request.method=='POST':
+            categories=Category.query.all()
+            c=int(request.form.get('category'))
+            priceMore=int(request.form.get('priceMore'))
+            priceLess=int(request.form.get('priceLess'))
+            if c<=0:
+                products=Product.query.filter(Product.peach<priceLess, Product.peach>priceMore).all()
+            else:
+                products=Product.query.filter(Product.cid==c, Product.peach<=priceLess, Product.peach>priceMore).all()
+            return render_template('home.html', products=products, categories=categories)
+        categories=Category.query.all()
         products= Product.query.all()
-        return render_template('home.html', products=products)
+        return render_template('home.html', products=products, categories=categories)
     return render_template('index.html')
 @app.route("/logout")
 def logout():
